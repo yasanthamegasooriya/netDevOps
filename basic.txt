@@ -1,0 +1,27 @@
+en
+!
+config t
+!
+hostname S6
+!
+int vlan 1
+ip address 192.168.122.16 255.255.255.0
+no shutdown
+exit
+!
+username root password cisco
+username root privilege 15
+!
+line vty 0 4
+login local
+transport input all
+exit
+!
+!
+ip domain-name cciepython.com
+crypto key generate rsa
+1024
+exit
+!
+wr
+
