@@ -5,10 +5,10 @@ RUN mkdir -p /networkautomation
 WORKDIR /networkautomation
 COPY . .
 
-RUN apt-get install python -y
-RUN apt-get install python-pip
-RUN pip install netmiko
+RUN apt-get install python3 -y
+RUN apt-get install python3-pip -y
+RUN pip3 install netmiko
 
-ENTRYPOINT [ "python" ]
+ENTRYPOINT [ "python3" ]
 
 CMD [ "/networkautomation/ethechannel.py" ]
