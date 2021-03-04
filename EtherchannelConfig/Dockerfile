@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu
 
 RUN apt-get update -y
 RUN mkdir -p /networkautomation
