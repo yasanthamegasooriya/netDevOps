@@ -55,9 +55,6 @@ try:
 
 except:
     print("Connection Failed")
-<<<<<<< HEAD
 
 
-#test SCM for second
-=======
->>>>>>> parent of 61ef4df... test scm
+#test SCM for second new
