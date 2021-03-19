@@ -11,4 +11,4 @@ RUN pip3 install netmiko
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "/networkautomation/EtherchannelConfig/ethechannel.py" ]
+CMD [ "/networkautomation/vtpconfig/vtpconfig.py" ]

@@ -1,4 +1,5 @@
 from netmiko import ConnectHandler
+import sys
 
 IOS_L3_core1 = {
     'device_type': 'cisco_ios',
