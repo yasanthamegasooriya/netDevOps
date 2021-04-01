@@ -25,3 +25,4 @@ exit
 !
 wr
 
+#Need to configure manually
