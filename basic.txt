@@ -25,4 +25,4 @@ exit
 !
 wr
 
-#Need to configure manually
+# edit jenkins file with ssh
