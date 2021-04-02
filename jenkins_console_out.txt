@@ -1,0 +1,230 @@
+Started by GitHub push by yasa1995
+Running in Durability level: MAX_SURVIVABILITY
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/netDevOps
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (clear workspace)
+[Pipeline] deleteDir
+[Pipeline] sh
++ ls -lah
+total 8.0K
+drwxr-xr-x  2 jenkins jenkins 4.0K Apr  2 07:17 .
+drwxr-xr-x 11 jenkins jenkins 4.0K Apr  2 07:17 ..
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Git pulling)
+[Pipeline] echo
+git pulling..
+[Pipeline] git
+The recommended git tool is: NONE
+Warning: CredentialId "gitCred" could not be found.
+Cloning the remote Git repository
+Cloning repository https://github.com/yasa1995/netDevOps.git
+ > git init /var/lib/jenkins/workspace/netDevOps # timeout=10
+Fetching upstream changes from https://github.com/yasa1995/netDevOps.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.25.1'
+ > git fetch --tags --force --progress -- https://github.com/yasa1995/netDevOps.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/yasa1995/netDevOps.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 24cfd770bfd6ea2b2c55502561e87b5fc1e7b968 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 24cfd770bfd6ea2b2c55502561e87b5fc1e7b968 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git checkout -b main 24cfd770bfd6ea2b2c55502561e87b5fc1e7b968 # timeout=10
+Commit message: "Merge branch 'main' of https://github.com/yasa1995/netDevOps into main"
+ > git rev-list --no-walk 2e1245a7bf386d56e540bee41c6a5bd9176ada8f # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Docker image build)
+[Pipeline] echo
+Images is building ...
+[Pipeline] sh
++ docker build -t yasantha1995/networkautomation /var/lib/jenkins/workspace/netDevOps/EtherchannelConfig/
+Sending build context to Docker daemon  4.608kB
+
+Step 1/9 : FROM ubuntu
+ ---> 8e428cff54c8
+Step 2/9 : RUN apt-get update -y
+ ---> Using cache
+ ---> eb6b6e4c22e7
+Step 3/9 : RUN mkdir -p /networkautomation
+ ---> Using cache
+ ---> 6dc9caa43a99
+Step 4/9 : WORKDIR /networkautomation
+ ---> Using cache
+ ---> 1c72f8e2b4ac
+Step 5/9 : COPY . .
+ ---> Using cache
+ ---> 8ad513abf9dc
+Step 6/9 : RUN apt-get install python3 -y
+ ---> Using cache
+ ---> f820ad38d829
+Step 7/9 : RUN apt-get install python3-pip -y
+ ---> Using cache
+ ---> d21f66a381b6
+Step 8/9 : RUN pip3 install netmiko
+ ---> Using cache
+ ---> ca5ac1fa9273
+Step 9/9 : CMD ["python3", "/networkautomation/ethechannel.py" ]
+ ---> Using cache
+ ---> 8445adb02081
+Successfully built 8445adb02081
+Successfully tagged yasantha1995/networkautomation:latest
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Upload Image)
+[Pipeline] echo
+Image is pushing....
+[Pipeline] sh
++ docker login -u yasantha1995 -p Yasa@1995
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted in /var/lib/jenkins/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[Pipeline] sh
++ docker push yasantha1995/networkautomation
+The push refers to repository [docker.io/yasantha1995/networkautomation]
+6974415df694: Preparing
+72d577c196a7: Preparing
+427245575306: Preparing
+ee7446bc151f: Preparing
+3b5e7245ddd2: Preparing
+387335655c28: Preparing
+d4dfaa212623: Preparing
+cba97cc5811c: Preparing
+0c78fac124da: Preparing
+387335655c28: Waiting
+d4dfaa212623: Waiting
+cba97cc5811c: Waiting
+0c78fac124da: Waiting
+72d577c196a7: Layer already exists
+3b5e7245ddd2: Layer already exists
+ee7446bc151f: Layer already exists
+387335655c28: Layer already exists
+cba97cc5811c: Layer already exists
+d4dfaa212623: Layer already exists
+0c78fac124da: Layer already exists
+427245575306: Layer already exists
+6974415df694: Layer already exists
+latest: digest: sha256:2d400ed0fd7d76af5b0ac90898fa640a80cf396c7234069faaf313cb7f710e8e size: 2205
+[Pipeline] echo
+Image pushed.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Docker prune)
+[Pipeline] sh
++ docker system prune -f
+Total reclaimed space: 0B
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploying on Production)
+[Pipeline] sshagent
+[ssh-agent] Using credentials ec2-user (production server credentials)
+[ssh-agent] Looking for ssh-agent implementation...
+[ssh-agent]   Exec ssh-agent (binary ssh-agent on a remote machine)
+$ ssh-agent
+SSH_AUTH_SOCK=/tmp/ssh-GtgQi5JyPiFC/agent.105192
+SSH_AGENT_PID=105194
+Running ssh-add (command line suppressed)
+Identity added: /var/lib/jenkins/workspace/netDevOps@tmp/private_key_3106411082882411791.key (/var/lib/jenkins/workspace/netDevOps@tmp/private_key_3106411082882411791.key)
+[ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
++ ssh -o StrictHostKeyChecking=no ec2-user@100.25.205.47 -tt -f docker stop networkpipelinevtpconfig
+[Pipeline] sh
++ ssh ec2-user@100.25.205.47 docker rm EtherchannelConfig
+EtherchannelConfig
+[Pipeline] sh
++ docker images -q
++ ssh ec2-user@100.25.205.47 docker rmi -f 8445adb02081 8e428cff54c8
+Untagged: yasantha1995/networkautomation:latest
+Untagged: yasantha1995/networkautomation@sha256:2d400ed0fd7d76af5b0ac90898fa640a80cf396c7234069faaf313cb7f710e8e
+Deleted: sha256:8445adb0208179c5785c478ef46ad8d410b58a04b9fba98d8ddcaa77e1353abc
+Deleted: sha256:3510b597980f819ff062644b4f6906770ac3390eb919711d9a1848e9cf544610
+Deleted: sha256:533a7e5928351686e84e072c46fbfbfef902bfa8dd6ab4f597f9f11fcc065f93
+Deleted: sha256:5159f85d75273c6e548e741658ace75ab3593c23a3bce743665ca854bea12ecf
+Deleted: sha256:eb4d67c8cce9d9e6237265180ef0f1362f28b21883990b856f8dfd46d341b575
+Deleted: sha256:776fef323fa3bac7860f07b504ad6707f3a0d1a6f00a03e603208c904c0f84e7
+Deleted: sha256:f81b2d80b2379bb73ff4b92ffd512ba6dcdec136bee6dad14636f9cf1795b260
+Deleted: sha256:b50dbc26e2451aefaf653957ffdde26b6b9050564adc2721b74fe371b875e4b9
+Deleted: sha256:d3dd7d3e93adea03fa74e03d89b8f42ce37b7b626ef8ea3f0b72b2b96286f165
+Deleted: sha256:0c78fac124da333b91fb282abf77d9421973e4a3289666bd439df08cbedfb9d6
+Error: No such image: 8e428cff54c8
+[Pipeline] sh
++ ssh ec2-user@100.25.205.47 docker run -d -p 8080:80 --name EtherchannelConfig yasantha1995/networkautomation
+Unable to find image 'yasantha1995/networkautomation:latest' locally
+latest: Pulling from yasantha1995/networkautomation
+04a5f4cda3ee: Pulling fs layer
+ff496a88c8ed: Pulling fs layer
+0ce83f459fe7: Pulling fs layer
+32cb687640c7: Pulling fs layer
+78d1ffb116e2: Pulling fs layer
+fbb5a8c490ff: Pulling fs layer
+d1ff28107937: Pulling fs layer
+2234511823e1: Pulling fs layer
+d13578ca5d88: Pulling fs layer
+32cb687640c7: Waiting
+78d1ffb116e2: Waiting
+fbb5a8c490ff: Waiting
+d1ff28107937: Waiting
+2234511823e1: Waiting
+d13578ca5d88: Waiting
+ff496a88c8ed: Verifying Checksum
+ff496a88c8ed: Download complete
+0ce83f459fe7: Verifying Checksum
+0ce83f459fe7: Download complete
+78d1ffb116e2: Verifying Checksum
+78d1ffb116e2: Download complete
+fbb5a8c490ff: Verifying Checksum
+fbb5a8c490ff: Download complete
+32cb687640c7: Verifying Checksum
+32cb687640c7: Download complete
+04a5f4cda3ee: Verifying Checksum
+04a5f4cda3ee: Download complete
+d1ff28107937: Verifying Checksum
+d1ff28107937: Download complete
+d13578ca5d88: Verifying Checksum
+d13578ca5d88: Download complete
+2234511823e1: Verifying Checksum
+2234511823e1: Download complete
+04a5f4cda3ee: Pull complete
+ff496a88c8ed: Pull complete
+0ce83f459fe7: Pull complete
+32cb687640c7: Pull complete
+78d1ffb116e2: Pull complete
+fbb5a8c490ff: Pull complete
+d1ff28107937: Pull complete
+2234511823e1: Pull complete
+d13578ca5d88: Pull complete
+Digest: sha256:2d400ed0fd7d76af5b0ac90898fa640a80cf396c7234069faaf313cb7f710e8e
+Status: Downloaded newer image for yasantha1995/networkautomation:latest
+fad19881eda0bd8bd3ce582f283c202b7b59180846633bff73800ef49ac9d4b7
+[Pipeline] }
+$ ssh-agent -k
+unset SSH_AUTH_SOCK;
+unset SSH_AGENT_PID;
+echo Agent pid 105194 killed;
+[ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

@@ -6,9 +6,10 @@ pipeline{
         //- update your credentials ID after creating credentials for connecting to Docker Hub
         registryCredential = 'Docke_Cred'
         dockerImage = ''
+
     }
     stages{
-        stage('clear workspcace'){
+        stage('clear workspace'){
             steps{
                 deleteDir()
                 sh 'ls -lah'
@@ -42,6 +43,18 @@ pipeline{
                 sh "docker system prune -f"
             }
         }
+
+            stage('Deploying on Production'){
+        steps{       
+        sshagent(['productionID']){
+            sh 'ssh -o StrictHostKeyChecking=no ec2-user@100.25.205.47 -tt -f docker stop networkpipelinevtpconfig || true'
+            sh 'ssh ec2-user@100.25.205.47 docker rm EtherchannelConfig || true'
+            sh 'ssh ec2-user@100.25.205.47 docker rmi -f $(docker images -q) || true'
+            sh 'ssh ec2-user@100.25.205.47 docker run -d -p 8080:80 --name EtherchannelConfig yasantha1995/networkautomation'
+            
+        }}
+        
+
     }
-    
 }
+    }
