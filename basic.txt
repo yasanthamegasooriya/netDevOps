@@ -25,4 +25,4 @@ exit
 !
 wr
 
-# edit jenkins file with ssh checked
+# edit jenkins file with ssh checked final
